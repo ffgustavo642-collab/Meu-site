@@ -4,48 +4,85 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Catálogo - Produtos de Limpeza</title>
+
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 0;
-      background: #f4f4f4;
+      background: #e9f3ff;
     }
+
+    /* TOPO COM IMAGEM */
     header {
-      background: #0a7cff;
+      background-image: url("img/furacao-limpeza.png");
+      background-size: cover;
+      background-position: center;
       color: #fff;
-      padding: 20px;
+      padding: 70px 20px;
       text-align: center;
     }
+
+    header h1 {
+      font-size: 36px;
+      margin-bottom: 10px;
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.6);
+    }
+
+    header p {
+      font-size: 18px;
+      text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
+    }
+
+    /* FUNDO AZUL DA ÁREA DE PRODUTOS */
+    .area-produtos {
+      background: linear-gradient(180deg, #0a7cff, #1e90ff);
+      padding: 40px 0;
+    }
+
     .container {
       padding: 20px;
       max-width: 1100px;
       margin: auto;
     }
+
+    .container h2 {
+      color: #fff;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 30px;
+    }
+
     .produtos {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 20px;
     }
+
     .produto {
       background: #fff;
       border-radius: 8px;
       padding: 15px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
       text-align: center;
     }
+
     .produto img {
       width: 100%;
       height: 200px;
       object-fit: cover;
       border-radius: 5px;
     }
+
     .produto h3 {
       margin: 10px 0;
+      color: #0a7cff;
     }
+
     .produto p {
       font-size: 14px;
       color: #555;
     }
+
     .produto button {
       background: #25d366;
       color: #fff;
@@ -54,74 +91,91 @@
       border-radius: 5px;
       cursor: pointer;
       font-size: 15px;
+      width: 100%;
+      margin-top: 5px;
     }
+
     .produto button:hover {
       background: #1ebe5d;
     }
+
     footer {
-      background: #222;
+      background: #0a7cff;
       color: #fff;
       text-align: center;
       padding: 15px;
-      margin-top: 30px;
     }
   </style>
 </head>
+
 <body>
+
+  <!-- TOPO -->
   <header>
     <h1>Catálogo de Produtos de Limpeza</h1>
     <p>Qualidade e economia para sua casa e empresa</p>
   </header>
 
-  <div class="container">
-    <h2>Nossos Produtos</h2>
-    <!-- CATÁLOGO (COM IMAGEM DE FUNDO) -->
-<section class="catalogo">
-  <h1>Catálogo de Produtos de Limpeza</h1>
-  <p>Qualidade e economia para sua casa e empresa</p>
-</section>
+  <!-- ÁREA AZUL -->
+  <section class="area-produtos">
+    <div class="container">
+      <h2>Nossos Produtos</h2>
 
-<!-- PRODUTOS (FUNDO AZUL) -->
-<section class="produtos">
-  <div class="produto">
-    <img src="img/sabao-liquido-bonrruque.jpg" alt="Sabão Líquido Bonrruque">
-    <h3>Sabão Líquido Bonrruque</h3>
-    <p>Alto rendimento para lavar roupas.</p>
+      <div class="produtos">
 
-    <button onclick="encomendar('Bonrruque 2L - R$ 12,00')">
-      2 Litros – R$ 12,00
-    </button>
+        <!-- PRODUTO BONRRUQUE -->
+        <div class="produto">
+          <img src="sabao-liquido-bonrruque.jpg" alt="Sabão Líquido Bonrruque" />
 
-    <button onclick="encomendar('Bonrruque 5L - R$ 25,00')">
-      5 Litros – R$ 25,00
-    </button>
-  </div>
-</section>
+          <h3>Sabão Líquido Bonrruque</h3>
+          <p>Sabão líquido ideal para lavar roupas, alto rendimento.</p>
 
+          <p><strong>2 Litros — R$ 12,00</strong></p>
+          <button onclick="encomendar('Sabão Líquido Bonrruque 2L - R$ 12,00')">
+            Comprar 2L
+          </button>
 
+          <p><strong>5 Litros — R$ 25,00</strong></p>
+          <button onclick="encomendar('Sabão Líquido Bonrruque 5L - R$ 25,00')">
+            Comprar 5L
+          </button>
+        </div>
 
+        <!-- DESINFETANTE -->
+        <div class="produto">
+          <img src="https://via.placeholder.com/300x200" alt="Desinfetante" />
+          <h3>Desinfetante</h3>
+          <p>Elimina 99,9% dos germes.</p>
+          <p><strong>R$ 10,00</strong></p>
+          <button onclick="encomendar('Desinfetante - R$ 10,00')">
+            Encomendar
+          </button>
+        </div>
 
-      <div class="produto">
-        <img src="https://via.placeholder.com/300x200" alt="Desinfetante" />
-        <h3>Desinfetante</h3>
-        <p>Elimina 99,9% dos germes.</p>
-        <p><strong>R$ 10,00</strong></p>
-        <button onclick="encomendar('Desinfetante - R$ 10,00')">Encomendar</button>
-      </div>
+        <!-- ÁGUA SANITÁRIA -->
+        <div class="produto">
+          <img src="https://via.placeholder.com/300x200" alt="Água Sanitária" />
+          <h3>Água Sanitária</h3>
+          <p>Perfeita para limpeza pesada.</p>
+          <p><strong>R$ 7,00</strong></p>
+          <button onclick="encomendar('Água Sanitária - R$ 7,00')">
+            Encomendar
+          </button>
+        </div>
 
-      <div class="produto">
-        <img src="https://via.placeholder.com/300x200" alt="Água Sanitária" />
-        <h3>Água Sanitária</h3>
-        <p>Perfeita para limpeza pesada.</p>
-        <p><strong>R$ 7,00</strong></p>
-        <button onclick="encomendar('Água Sanitária - R$ 7,00')">Encomendar</button>
       </div>
     </div>
-  </div>
+  </section>
 
   <footer>
-    <p>📞 Encomendas pelo WhatsApp | © 2026 Sua Empresa</p>
-  </footer>
+  <p>
+    📞 Encomendas pelo WhatsApp <br>
+    📧 Fazemos também encomendas pelo e-mail:<br>
+    <strong>furacaodalimpeza027@gmail.com</strong>
+  </p>
+  <p>© 2026 Furacão da Limpeza</p>
+</footer>
+
 
   <script>
     function encomendar(produto) {
@@ -131,5 +185,6 @@
       window.open(url, '_blank');
     }
   </script>
+
 </body>
 </html>
