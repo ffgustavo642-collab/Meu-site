@@ -9,20 +9,31 @@
 body{font-family:Arial,sans-serif;margin:0;background:#e9f3ff}
 header{background:url("img/fundo-limpeza.jpg") center/cover;height:220px}
 
+/* BOTÃO DO CARRINHO */
 .carrinho-btn{
  position:fixed;top:20px;right:20px;
  background:#0a7cff;color:#fff;
  padding:12px 18px;border-radius:50px;
  display:flex;gap:8px;cursor:pointer;
  box-shadow:0 4px 10px rgba(0,0,0,.3);
- z-index:1000
+ z-index:3000;
+ transition:.2s;
 }
+.carrinho-btn.animar{transform:scale(1.15)}
 .carrinho-btn span{
  background:#ff3d00;border-radius:50%;
  padding:4px 8px;font-size:12px
 }
 
-.abas{display:flex;justify-content:center;gap:10px;margin:20px}
+/* ABAS */
+.abas{
+ display:flex;
+ justify-content:center;
+ gap:10px;
+ margin:20px;
+ position:relative;
+ z-index:10;
+}
 .abas button{
  background:#fff;color:#0a7cff;
  border:none;padding:10px 18px;
@@ -36,6 +47,7 @@ header{background:url("img/fundo-limpeza.jpg") center/cover;height:220px}
 .container{max-width:1100px;margin:auto;padding:15px}
 h2{text-align:center;color:#0a7cff}
 
+/* PRODUTOS */
 .produtos{
  display:grid;
  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
@@ -70,14 +82,21 @@ h2{text-align:center;color:#0a7cff}
  font-weight:bold
 }
 
+/* CARRINHO LATERAL */
 #carrinho{
- position:fixed;bottom:-500px;left:0;right:0;
- background:#fff;padding:15px;
- border-top:4px solid #0a7cff;
- box-shadow:0 -4px 15px rgba(0,0,0,.3);
- transition:.3s;border-radius:15px 15px 0 0
+ position:fixed;
+ top:0;
+ right:-360px;
+ width:320px;
+ height:100%;
+ background:#fff;
+ padding:15px;
+ box-shadow:-4px 0 15px rgba(0,0,0,.3);
+ transition:.3s;
+ z-index:2000;
+ overflow-y:auto;
 }
-#carrinho.aberto{bottom:0}
+#carrinho.aberto{right:0}
 
 .item-carrinho{
  display:flex;
@@ -97,7 +116,8 @@ h2{text-align:center;color:#0a7cff}
  border-radius:8px;font-size:16px
 }
 .continuar{
- background:#ccc;color:#000;
+ background:#25d366;
+ color:#fff;
  border:none;padding:10px;width:100%;
  border-radius:8px;margin-top:6px
 }
@@ -108,7 +128,7 @@ h2{text-align:center;color:#0a7cff}
 
 <header></header>
 
-<div class="carrinho-btn" onclick="toggleCarrinho()">
+<div class="carrinho-btn" id="btnCarrinho" onclick="toggleCarrinho()">
 🛒 Carrinho <span id="contador">0</span>
 </div>
 
@@ -309,6 +329,8 @@ h2{text-align:center;color:#0a7cff}
 <button class="continuar" onclick="toggleCarrinho()">Continuar comprando</button>
 </div>
 
+<audio id="somAdd" src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3"></audio>
+
 <script>
 let carrinho=[];
 
@@ -316,6 +338,13 @@ function addProduto(nome,preco){
  let item=carrinho.find(p=>p.nome===nome);
  if(item) item.qtd++;
  else carrinho.push({nome,preco,qtd:1});
+
+ document.getElementById("somAdd").play();
+
+ let btn=document.getElementById("btnCarrinho");
+ btn.classList.add("animar");
+ setTimeout(()=>btn.classList.remove("animar"),200);
+
  atualizar();
 }
 
@@ -360,6 +389,7 @@ function mostrarCategoria(id,btn){
  document.querySelectorAll(".abas button").forEach(b=>b.classList.remove("ativa"));
  document.getElementById(id).classList.add("ativa");
  btn.classList.add("ativa");
+ document.getElementById("carrinho").classList.remove("aberto");
 }
 </script>
 
