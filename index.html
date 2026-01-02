@@ -78,32 +78,28 @@ h2{text-align:center;color:#0a7cff}
  transition:.3s;border-radius:15px 15px 0 0
 }
 #carrinho.aberto{bottom:0}
-#carrinho ul{list-style:none;padding:0}
 
 .item-carrinho{
  display:flex;
  justify-content:space-between;
  align-items:center;
- margin-bottom:10px;
- gap:10px
+ margin-bottom:10px
 }
-
 .item-carrinho button{
- padding:6px 8px;
- border-radius:6px;
- border:none;
- background:#0a7cff;
- color:#fff;
- cursor:pointer;
- font-size:14px
+ background:#0a7cff;color:#fff;border:none;
+ padding:6px;border-radius:6px;cursor:pointer
 }
-.item-carrinho button.lixeira{background:#ff3d00}
+.item-carrinho .lixeira{background:#ff3d00}
 
 .finalizar{
  background:#0a7cff;color:#fff;
- border:none;padding:12px;
- width:100%;border-radius:8px;
- font-size:16px
+ border:none;padding:12px;width:100%;
+ border-radius:8px;font-size:16px
+}
+.continuar{
+ background:#ccc;color:#000;
+ border:none;padding:10px;width:100%;
+ border-radius:8px;margin-top:6px
 }
 </style>
 </head>
@@ -128,7 +124,7 @@ h2{text-align:center;color:#0a7cff}
 <div id="banheiro" class="categoria ativa">
 <h2>Banheiro</h2>
 <div class="produtos">
- 
+
 <!-- produtos banheiro -->
   <div class="produto">
 <img src="img/sabonete-liquido-dove.jpg">
@@ -310,6 +306,7 @@ h2{text-align:center;color:#0a7cff}
 <ul id="lista"></ul>
 <p><strong>Total: R$ <span id="total">0.00</span></strong></p>
 <button class="finalizar" onclick="finalizar()">Finalizar no WhatsApp</button>
+<button class="continuar" onclick="toggleCarrinho()">Continuar comprando</button>
 </div>
 
 <script>
@@ -322,10 +319,6 @@ function addProduto(nome,preco){
  atualizar();
 }
 
-function aumentar(i){carrinho[i].qtd++;atualizar();}
-function diminuir(i){carrinho[i].qtd--;if(carrinho[i].qtd<=0)carrinho.splice(i,1);atualizar();}
-function remover(i){carrinho.splice(i,1);atualizar();}
-
 function atualizar(){
  let lista=document.getElementById("lista");
  let totalEl=document.getElementById("total");
@@ -334,17 +327,19 @@ function atualizar(){
  let total=0,itens=0;
 
  carrinho.forEach((p,i)=>{
-  total+=p.preco*p.qtd; itens+=p.qtd;
+  let sub=p.preco*p.qtd;
+  total+=sub;itens+=p.qtd;
   lista.innerHTML+=`
-   <li class="item-carrinho">
-    <div><strong>${p.nome}</strong><br>R$ ${p.preco.toFixed(2)}</div>
+  <li class="item-carrinho">
+    <div><strong>${p.nome}</strong><br><strong>R$ ${sub.toFixed(2)}</strong></div>
     <div>
-     <button onclick="diminuir(${i})">➖</button>
-     <button onclick="aumentar(${i})">➕</button>
-     <button class="lixeira" onclick="remover(${i})">🗑️</button>
+      <button onclick="p.qtd--;if(p.qtd<=0)carrinho.splice(${i},1);atualizar()">➖</button>
+      <button onclick="p.qtd++;atualizar()">➕</button>
+      <button class="lixeira" onclick="carrinho.splice(${i},1);atualizar()">🗑️</button>
     </div>
-   </li>`;
+  </li>`;
  });
+
  totalEl.innerText=total.toFixed(2);
  contador.innerText=itens;
 }
@@ -355,7 +350,7 @@ function toggleCarrinho(){
 
 function finalizar(){
  let msg="Pedido:%0A";
- carrinho.forEach(p=>msg+=`- ${p.nome}%0A`);
+ carrinho.forEach(p=>msg+=`- ${p.nome} (${p.qtd}x)%0A`);
  msg+=`Total: R$ ${document.getElementById("total").innerText}`;
  window.open("https://wa.me/5515996585967?text="+msg);
 }
