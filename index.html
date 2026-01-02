@@ -239,7 +239,14 @@ function adicionar(nome, preco) {
 
 function remover(nome) {
   const item = carrinho.find(p => p.nome === nome);
-
+  
+<script>
+function excluirProduto(nome) {
+  carrinho = carrinho.filter(p => p.nome !== nome);
+  atualizarCarrinho();
+}
+</script>
+  
   if (!item) return;
 
   item.qtd--;
