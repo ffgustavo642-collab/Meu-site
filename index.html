@@ -1,24 +1,8 @@
 <!DOCTYPE html>
-<h2>Carrinho</h2>
-
-<div id="carrinho"></div>
-
-<p><strong>Total: R$ <span id="total">0.00</span></strong></p>
-
-<!-- Exemplo de produto -->
-<button onclick="adicionarAoCarrinho('Produto 1', 25)">
-  Adicionar Produto 1
-</button>
-
-<button onclick="adicionarAoCarrinho('Produto 2', 40)">
-  Adicionar Produto 2
-</button>
-
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Furacão da Limpeza</title>
 
 <style>
@@ -28,7 +12,6 @@ body {
   background: #e9f3ff;
 }
 
-/* TOPO */
 header {
   background-image: url("img/fundo-limpeza.jpg");
   background-size: cover;
@@ -60,13 +43,8 @@ header {
 }
 
 /* CATEGORIAS */
-.categoria {
-  display: none;
-}
-
-.categoria.ativa {
-  display: block;
-}
+.categoria { display: none; }
+.categoria.ativa { display: block; }
 
 .container {
   max-width: 1100px;
@@ -127,16 +105,36 @@ h2 {
 #carrinho ul {
   list-style: none;
   padding: 0;
-  margin: 5px 0;
 }
 
-#carrinho button {
+.item-carrinho {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 5px;
+  font-size: 14px;
+}
+
+.item-carrinho button {
+  padding: 4px 8px;
+  margin-left: 3px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-add { background: #25d366; color: #fff; }
+.btn-rem { background: #ff9800; color: #fff; }
+.btn-del { background: #f44336; color: #fff; }
+
+#carrinho button.finalizar {
   background: #0a7cff;
   color: #fff;
   border: none;
   padding: 10px;
   width: 100%;
   border-radius: 6px;
+  margin-top: 5px;
 }
 
 /* RODAPÉ */
@@ -145,7 +143,7 @@ footer {
   color: #fff;
   text-align: center;
   padding: 20px;
-  margin-bottom: 120px;
+  margin-bottom: 140px;
 }
 </style>
 </head>
@@ -154,7 +152,6 @@ footer {
 
 <header></header>
 
-<!-- ABAS -->
 <div class="abas">
   <button class="ativa" onclick="mostrarCategoria('banheiro', this)">Banheiro</button>
   <button onclick="mostrarCategoria('limpeza', this)">Limpeza Geral</button>
@@ -163,26 +160,21 @@ footer {
 
 <div class="container">
 
-<!-- BANHEIRO -->
 <div id="banheiro" class="categoria ativa">
 <h2>Produtos para Banheiro</h2>
 <div class="produtos">
-
 <div class="produto">
 <img src="img/desinfetante-banheiro.jpg">
 <h3>Desinfetante Banheiro</h3>
 <p>R$ 10,00</p>
 <button onclick="adicionar('Desinfetante Banheiro', 10)">Adicionar</button>
 </div>
-
 </div>
 </div>
 
-<!-- LIMPEZA GERAL -->
 <div id="limpeza" class="categoria">
 <h2>Limpeza Geral</h2>
 <div class="produtos">
-
 <div class="produto">
 <img src="img/sabao-liquido-bonrruque.jpg">
 <h3>Sabão Líquido 2L</h3>
@@ -193,45 +185,38 @@ footer {
 <p>R$ 25,00</p>
 <button onclick="adicionar('Sabão Líquido 5L', 25)">Adicionar</button>
 </div>
-
 </div>
 </div>
 
-<!-- CASA -->
 <div id="casa" class="categoria">
 <h2>Casa</h2>
 <div class="produtos">
-
 <div class="produto">
 <img src="img/vassoura-de-canto.jpg">
 <h3>Vassoura de Canto</h3>
 <p>R$ 19,00</p>
 <button onclick="adicionar('Vassoura de Canto', 19)">Adicionar</button>
 </div>
-
 </div>
 </div>
 
 </div>
 
-<!-- CARRINHO -->
 <div id="carrinho">
 <strong>Carrinho</strong>
 <ul id="lista"></ul>
-<p><strong>Total: R$ <span id="total">0</span></strong></p>
-<button onclick="finalizar()">Finalizar no WhatsApp</button>
+<p><strong>Total: R$ <span id="total">0.00</span></strong></p>
+<button class="finalizar" onclick="finalizar()">Finalizar no WhatsApp</button>
 </div>
 
 <footer>
 <p>📞 Encomendas pelo WhatsApp</p>
-<p>📧 Também aceitamos pedidos pelo e-mail:</p>
 <strong>furacaodalimpeza027@gmail.com</strong>
 <p>© 2026 Furacão da Limpeza</p>
 </footer>
 
 <script>
 let carrinho = [];
-let total = 0;
 
 function mostrarCategoria(id, btn) {
   document.querySelectorAll('.categoria').forEach(c => c.classList.remove('ativa'));
@@ -241,27 +226,64 @@ function mostrarCategoria(id, btn) {
 }
 
 function adicionar(nome, preco) {
-  carrinho.push({nome, preco});
-  total += preco;
+  const item = carrinho.find(p => p.nome === nome);
+  if (item) {
+    item.qtd++;
+  } else {
+    carrinho.push({ nome, preco, qtd: 1 });
+  }
+  atualizarCarrinho();
+}
+
+function diminuir(nome) {
+  const item = carrinho.find(p => p.nome === nome);
+  if (item) {
+    item.qtd--;
+    if (item.qtd <= 0) remover(nome);
+  }
+  atualizarCarrinho();
+}
+
+function remover(nome) {
+  carrinho = carrinho.filter(p => p.nome !== nome);
   atualizarCarrinho();
 }
 
 function atualizarCarrinho() {
   const lista = document.getElementById('lista');
+  const totalSpan = document.getElementById('total');
   lista.innerHTML = '';
+  let total = 0;
+
   carrinho.forEach(item => {
+    total += item.preco * item.qtd;
+
     const li = document.createElement('li');
-    li.textContent = `${item.nome} - R$ ${item.preco}`;
+    li.className = 'item-carrinho';
+    li.innerHTML = `
+      ${item.nome} (${item.qtd}) - R$ ${(item.preco * item.qtd).toFixed(2)}
+      <div>
+        <button class="btn-add" onclick="adicionar('${item.nome}', ${item.preco})">+</button>
+        <button class="btn-rem" onclick="diminuir('${item.nome}')">-</button>
+        <button class="btn-del" onclick="remover('${item.nome}')">x</button>
+      </div>
+    `;
     lista.appendChild(li);
   });
-  document.getElementById('total').textContent = total.toFixed(2);
+
+  totalSpan.textContent = total.toFixed(2);
 }
 
 function finalizar() {
   let msg = 'Olá! Gostaria de encomendar:%0A';
-  carrinho.forEach(i => msg += `- ${i.nome} (R$ ${i.preco})%0A`);
-  msg += `Total: R$ ${total.toFixed(2)}`;
+  let total = 0;
 
+  carrinho.forEach(item => {
+    msg += `- ${item.nome} (${item.qtd}x) - R$ ${(item.preco * item.qtd).toFixed(2)}%0A`;
+    total += item.preco * item.qtd;
+  });
+
+  msg += `%0ATotal: R$ ${total.toFixed(2)}`;
   window.open(`https://wa.me/5515996585967?text=${msg}`, '_blank');
 }
 </script>
