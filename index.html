@@ -19,6 +19,36 @@ header {
   height: 220px;
 }
 
+/* BOTÃO CARRINHO */
+.carrinho-btn {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #0a7cff;
+  color: #fff;
+  border-radius: 50px;
+  padding: 12px 18px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,.3);
+  z-index: 1000;
+  cursor: pointer;
+  transition: transform .2s;
+}
+
+.carrinho-btn.animar {
+  transform: scale(1.1);
+}
+
+.carrinho-btn span {
+  background: #ff3d00;
+  border-radius: 50%;
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
 /* ABAS */
 .abas {
   display: flex;
@@ -42,7 +72,6 @@ header {
   color: #fff;
 }
 
-/* CATEGORIAS */
 .categoria { display: none; }
 .categoria.ativa { display: block; }
 
@@ -57,7 +86,6 @@ h2 {
   text-align: center;
 }
 
-/* PRODUTOS */
 .produtos {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -93,13 +121,18 @@ h2 {
 /* CARRINHO */
 #carrinho {
   position: fixed;
-  bottom: 0;
+  bottom: -400px;
   left: 0;
   right: 0;
   background: #fff;
   border-top: 3px solid #0a7cff;
   padding: 10px;
   box-shadow: 0 -2px 10px rgba(0,0,0,.2);
+  transition: bottom .3s ease;
+}
+
+#carrinho.aberto {
+  bottom: 0;
 }
 
 #carrinho ul {
@@ -136,21 +169,17 @@ h2 {
   border-radius: 6px;
   margin-top: 5px;
 }
-
-/* RODAPÉ */
-footer {
-  background: #0a7cff;
-  color: #fff;
-  text-align: center;
-  padding: 20px;
-  margin-bottom: 140px;
-}
 </style>
 </head>
 
 <body>
 
 <header></header>
+
+<!-- BOTÃO CARRINHO -->
+<div class="carrinho-btn" id="btnCarrinho" onclick="toggleCarrinho()">
+🛒 Carrinho <span id="contador">0</span>
+</div>
 
 <div class="abas">
   <button class="ativa" onclick="mostrarCategoria('banheiro', this)">Banheiro</button>
@@ -160,48 +189,54 @@ footer {
 
 <div class="container">
 
+<!-- BANHEIRO -->
 <div id="banheiro" class="categoria ativa">
 <h2>Produtos para Banheiro</h2>
 <div class="produtos">
-<div class="produto">
-<img src="img/desinfetante-banheiro.jpg">
-<h3>Desinfetante Banheiro</h3>
-<p>R$ 10,00</p>
-<button onclick="adicionar('Desinfetante Banheiro', 10)">Adicionar</button>
-</div>
-</div>
-</div>
 
-<div id="limpeza" class="categoria">
-<h2>Limpeza Geral</h2>
-<div class="produtos">
 <div class="produto">
-<img src="img/sabao-liquido-bonrruque.jpg">
-<h3>Sabão Líquido 2L</h3>
+<img src="img/sabonete-liquido-erva-doce.jpg">
+<h3>Sabonete Líquido Erva Doce 1L</h3>
 <p>R$ 12,00</p>
-<button onclick="adicionar('Sabão Líquido 2L', 12)">Adicionar</button>
+<button onclick="adicionar('Sabonete Líquido Erva Doce 1L', 8)">Adicionar</button>
 
-<h3>Sabão Líquido 5L</h3>
-<p>R$ 25,00</p>
-<button onclick="adicionar('Sabão Líquido 5L', 25)">Adicionar</button>
-</div>
-</div>
+<h3>Sabonete Líquido Erva Doce 5L</h3>
+<p>R$ 35,00</p>
+<button onclick="adicionar('Sabonete Líquido Erva Doce 5L', 35)">Adicionar</button>
 </div>
 
+</div>
+</div>
+
+<!-- CASA -->
 <div id="casa" class="categoria">
 <h2>Casa</h2>
 <div class="produtos">
+
 <div class="produto">
 <img src="img/vassoura-de-canto.jpg">
 <h3>Vassoura de Canto</h3>
 <p>R$ 19,00</p>
 <button onclick="adicionar('Vassoura de Canto', 19)">Adicionar</button>
 </div>
+
+<div class="produto">
+<img src="img/amaciante.jpg">
+<h3>Amaciante de Roupas 2L</h3>
+<p>R$ 7,00</p>
+<button onclick="adicionar('Amaciante de Roupas 1L', 7)">Adicionar</button>
+
+<h3>Amaciante de Roupas 5L</h3>
+<p>R$ 30,00</p>
+<button onclick="adicionar('Amaciante de Roupas 5L', 30)">Adicionar</button>
+</div>
+
 </div>
 </div>
 
 </div>
 
+<!-- CARRINHO -->
 <div id="carrinho">
 <strong>Carrinho</strong>
 <ul id="lista"></ul>
@@ -209,102 +244,81 @@ footer {
 <button class="finalizar" onclick="finalizar()">Finalizar no WhatsApp</button>
 </div>
 
-<footer>
-<p>📞 Encomendas pelo WhatsApp</p>
-<strong>furacaodalimpeza027@gmail.com</strong>
-<p>© 2026 Furacão da Limpeza</p>
-</footer>
-
 <script>
-let carrinho = [];
+let carrinho = JSON.parse(localStorage.getItem("carrinho")) || [];
 
-function mostrarCategoria(id, btn) {
-  document.querySelectorAll('.categoria').forEach(c => c.classList.remove('ativa'));
-  document.querySelectorAll('.abas button').forEach(b => b.classList.remove('ativa'));
-  document.getElementById(id).classList.add('ativa');
-  btn.classList.add('ativa');
+function salvar() {
+  localStorage.setItem("carrinho", JSON.stringify(carrinho));
+}
+
+function animarCarrinho(){
+  const btn = document.getElementById("btnCarrinho");
+  btn.classList.add("animar");
+  setTimeout(()=>btn.classList.remove("animar"),200);
 }
 
 function adicionar(nome, preco) {
   const item = carrinho.find(p => p.nome === nome);
-
-  if (item) {
-    item.qtd++;
-  } else {
-    carrinho.push({ nome, preco, qtd: 1 });
-  }
-
-  atualizarCarrinho();
+  if (item) item.qtd++;
+  else carrinho.push({ nome, preco, qtd: 1 });
+  animarCarrinho();
+  atualizar();
 }
 
-function remover(nome) {
-  const item = carrinho.find(p => p.nome === nome);
-  if (!item) return;
-
-  item.qtd--;
-
-  if (item.qtd <= 0) {
-    carrinho = carrinho.filter(p => p.nome !== nome);
-  }
-
-  atualizarCarrinho();
-}
-
-/* 🗑️ REMOVE O PRODUTO INTEIRO */
-function excluirProduto(nome) {
-  carrinho = carrinho.filter(p => p.nome !== nome);
-  atualizarCarrinho();
-}
-
-function atualizarCarrinho() {
-  const lista = document.getElementById('lista');
-  lista.innerHTML = '';
-
+function atualizar() {
+  const lista = document.getElementById("lista");
+  const totalEl = document.getElementById("total");
+  const contador = document.getElementById("contador");
+  lista.innerHTML = "";
   let total = 0;
+  let itens = 0;
 
-  carrinho.forEach(item => {
+  carrinho.forEach((item, i) => {
     total += item.preco * item.qtd;
-
-    const li = document.createElement('li');
-    li.className = 'item-carrinho';
-
-    li.innerHTML = `
-      <span>${item.nome}</span>
-      <div>
-        <button class="btn-rem" onclick="remover('${item.nome}')">−</button>
-        <strong>${item.qtd}</strong>
-        <button class="btn-add" onclick="adicionar('${item.nome}', ${item.preco})">+</button>
-        <button class="btn-del" onclick="excluirProduto('${item.nome}')">🗑️</button>
-        <span>R$ ${(item.preco * item.qtd).toFixed(2)}</span>
-      </div>
-    `;
-
-    lista.appendChild(li);
+    itens += item.qtd;
+    lista.innerHTML += `
+      <li class="item-carrinho">
+        ${item.nome} (${item.qtd})
+        <div>
+          <button class="btn-add" onclick="itemAdd(${i})">+</button>
+          <button class="btn-rem" onclick="itemRem(${i})">-</button>
+          <button class="btn-del" onclick="itemDel(${i})">x</button>
+        </div>
+      </li>`;
   });
 
-  document.getElementById('total').textContent = total.toFixed(2);
+  totalEl.innerText = total.toFixed(2);
+  contador.innerText = itens;
+  salvar();
+}
+
+function itemAdd(i){ carrinho[i].qtd++; atualizar(); }
+function itemRem(i){ carrinho[i].qtd--; if(carrinho[i].qtd<=0) carrinho.splice(i,1); atualizar(); }
+function itemDel(i){ carrinho.splice(i,1); atualizar(); }
+
+function toggleCarrinho() {
+  document.getElementById("carrinho").classList.toggle("aberto");
 }
 
 function finalizar() {
-  if (carrinho.length === 0) {
-    alert("Carrinho vazio!");
-    return;
-  }
+  const nome = prompt("Digite seu nome:");
+  if(!nome) return;
 
-  let msg = 'Olá! Gostaria de encomendar:%0A';
-  let total = 0;
-
-  carrinho.forEach(item => {
-    msg += `- ${item.nome} x${item.qtd} = R$ ${(item.preco * item.qtd).toFixed(2)}%0A`;
-    total += item.preco * item.qtd;
-  });
-
-  msg += `%0ATotal: R$ ${total.toFixed(2)}`;
-
-  window.open(`https://wa.me/5515996585967?text=${msg}`, '_blank');
+  let msg = `Pedido - Cliente: ${nome}%0A%0A`;
+  carrinho.forEach(i => msg += `- ${i.nome} (${i.qtd})%0A`);
+  msg += `%0ATotal: R$ ${document.getElementById("total").innerText}`;
+  window.open("https://wa.me/5599999999999?text=" + msg);
 }
-</script>
 
+function mostrarCategoria(id, btn){
+  document.querySelectorAll(".categoria").forEach(c => c.classList.remove("ativa"));
+  document.querySelectorAll(".abas button").forEach(b => b.classList.remove("ativa"));
+  document.getElementById(id).classList.add("ativa");
+  btn.classList.add("ativa");
+}
+
+atualizar();
+</script>
 
 </body>
 </html>
