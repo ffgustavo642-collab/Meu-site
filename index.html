@@ -239,14 +239,6 @@ function adicionar(nome, preco) {
 
 function remover(nome) {
   const item = carrinho.find(p => p.nome === nome);
-  
-<script>
-function excluirProduto(nome) {
-  carrinho = carrinho.filter(p => p.nome !== nome);
-  atualizarCarrinho();
-}
-</script>
-  
   if (!item) return;
 
   item.qtd--;
@@ -255,6 +247,12 @@ function excluirProduto(nome) {
     carrinho = carrinho.filter(p => p.nome !== nome);
   }
 
+  atualizarCarrinho();
+}
+
+/* 🗑️ REMOVE O PRODUTO INTEIRO */
+function excluirProduto(nome) {
+  carrinho = carrinho.filter(p => p.nome !== nome);
   atualizarCarrinho();
 }
 
@@ -268,18 +266,16 @@ function atualizarCarrinho() {
     total += item.preco * item.qtd;
 
     const li = document.createElement('li');
-    li.style.display = 'flex';
-    li.style.justifyContent = 'space-between';
-    li.style.alignItems = 'center';
-    li.style.marginBottom = '8px';
+    li.className = 'item-carrinho';
 
     li.innerHTML = `
       <span>${item.nome}</span>
       <div>
-        <button onclick="remover('${item.nome}')">−</button>
-        <strong style="margin:0 6px">${item.qtd}</strong>
-        <button onclick="adicionar('${item.nome}', ${item.preco})">+</button>
-        <span style="margin-left:8px">R$ ${(item.preco * item.qtd).toFixed(2)}</span>
+        <button class="btn-rem" onclick="remover('${item.nome}')">−</button>
+        <strong>${item.qtd}</strong>
+        <button class="btn-add" onclick="adicionar('${item.nome}', ${item.preco})">+</button>
+        <button class="btn-del" onclick="excluirProduto('${item.nome}')">🗑️</button>
+        <span>R$ ${(item.preco * item.qtd).toFixed(2)}</span>
       </div>
     `;
 
