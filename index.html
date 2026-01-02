@@ -67,6 +67,28 @@ button{
 #carrinho.aberto{bottom:0}
 #carrinho ul{list-style:none;padding:0}
 
+.item-carrinho{
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ margin-bottom:10px;
+ gap:10px
+}
+
+.item-carrinho button{
+ width:auto;
+ padding:6px 8px;
+ border-radius:6px;
+ border:none;
+ background:#0a7cff;
+ color:#fff;
+ cursor:pointer;
+ font-size:14px
+}
+.item-carrinho button.lixeira{
+ background:#ff3d00
+}
+
 .finalizar{
  background:#0a7cff;color:#fff;
  border:none;padding:12px;
@@ -197,46 +219,65 @@ function addSelect(btn, nome) {
 
   let existe = carrinho.find(i => i.nome === item);
   if (existe) existe.qtd++;
-  else carrinho.push({ nome: item, preco: preco, qtd: 1 });
+  else carrinho.push({ nome: item, preco, qtd: 1 });
 
   atualizar();
 }
 
-function atualizar() {
-  let lista = document.getElementById("lista");
-  let totalEl = document.getElementById("total");
-  let contador = document.getElementById("contador");
+function aumentar(i){ carrinho[i].qtd++; atualizar(); }
+function diminuir(i){
+  carrinho[i].qtd--;
+  if(carrinho[i].qtd<=0) carrinho.splice(i,1);
+  atualizar();
+}
+function remover(i){ carrinho.splice(i,1); atualizar(); }
 
-  lista.innerHTML = "";
-  let total = 0;
-  let itens = 0;
+function atualizar(){
+  let lista=document.getElementById("lista");
+  let totalEl=document.getElementById("total");
+  let contador=document.getElementById("contador");
 
-  carrinho.forEach(i => {
-    total += i.preco * i.qtd;
-    itens += i.qtd;
-    lista.innerHTML += `<li>${i.nome} (${i.qtd})</li>`;
+  lista.innerHTML="";
+  let total=0,itens=0;
+
+  carrinho.forEach((p,i)=>{
+    let sub=p.preco*p.qtd;
+    total+=sub; itens+=p.qtd;
+
+    lista.innerHTML+=`
+    <li class="item-carrinho">
+      <div>
+        <strong>${p.nome}</strong><br>
+        R$ ${p.preco.toFixed(2)} x ${p.qtd} = <strong>R$ ${sub.toFixed(2)}</strong>
+      </div>
+      <div>
+        <button onclick="diminuir(${i})">➖</button>
+        <button onclick="aumentar(${i})">➕</button>
+        <button class="lixeira" onclick="remover(${i})">🗑️</button>
+      </div>
+    </li>`;
   });
 
-  totalEl.innerText = total.toFixed(2);
-  contador.innerText = itens;
+  totalEl.innerText=total.toFixed(2);
+  contador.innerText=itens;
 }
 
-function toggleCarrinho() {
-  document.getElementById("carrinho").classList.toggle("aberto");
+function toggleCarrinho(){
+ document.getElementById("carrinho").classList.toggle("aberto");
 }
 
-function finalizar() {
-  let msg = "Pedido:%0A";
-  carrinho.forEach(i => msg += `- ${i.nome} (${i.qtd})%0A`);
-  msg += `Total: R$ ${document.getElementById("total").innerText}`;
-  window.open("https://wa.me/5599999999999?text=" + msg);
+function finalizar(){
+ let msg="Pedido:%0A";
+ carrinho.forEach(p=>msg+=`- ${p.nome} (${p.qtd}x) - R$ ${(p.preco*p.qtd).toFixed(2)}%0A`);
+ msg+=`Total: R$ ${document.getElementById("total").innerText}`;
+ window.open("https://wa.me/5599999999999?text="+msg);
 }
 
-function mostrarCategoria(id, btn) {
-  document.querySelectorAll(".categoria").forEach(c => c.classList.remove("ativa"));
-  document.querySelectorAll(".abas button").forEach(b => b.classList.remove("ativa"));
-  document.getElementById(id).classList.add("ativa");
-  btn.classList.add("ativa");
+function mostrarCategoria(id,btn){
+ document.querySelectorAll(".categoria").forEach(c=>c.classList.remove("ativa"));
+ document.querySelectorAll(".abas button").forEach(b=>b.classList.remove("ativa"));
+ document.getElementById(id).classList.add("ativa");
+ btn.classList.add("ativa");
 }
 </script>
 
