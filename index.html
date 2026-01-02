@@ -66,10 +66,6 @@ button{
 }
 #carrinho.aberto{bottom:0}
 #carrinho ul{list-style:none;padding:0}
-.item-carrinho{
- display:flex;justify-content:space-between;
- margin-bottom:8px
-}
 
 .finalizar{
  background:#0a7cff;color:#fff;
@@ -101,20 +97,20 @@ button{
 <h2>Banheiro</h2>
 <div class="produtos">
 
- <div class="produto">
+<div class="produto">
 <img src="img/sabonete-liquido-dove.jpg">
 <h3>Sabonete Líquido Dove</h3>
-<select onchange="this.dataset.preco=this.value">
+<select>
 <option value="12">1L - R$ 12,00</option>
 <option value="35">5L - R$ 35,00</option>
 </select>
 <button onclick="addSelect(this,'Sabonete Líquido Dove')">Adicionar</button>
- </div>
- 
+</div>
+
 <div class="produto">
 <img src="img/sabonete-liquido-erva-doce.jpg">
 <h3>Sabonete Líquido Erva Doce</h3>
-<select onchange="this.dataset.preco=this.value">
+<select>
 <option value="12">1L - R$ 12,00</option>
 <option value="35">5L - R$ 35,00</option>
 </select>
@@ -133,17 +129,17 @@ button{
 <img src="img/sabao-liquido-bonrruque.jpg">
 <h3>Sabão Líquido Bonrruque</h3>
 <select>
-<option value="6">2L - R$ 12,00</option>
+<option value="12">2L - R$ 12,00</option>
 <option value="25">5L - R$ 25,00</option>
 </select>
 <button onclick="addSelect(this,'Sabão Líquido Bonrruque')">Adicionar</button>
 </div>
- 
+
 <div class="produto">
 <img src="img/sabao-de-coco.jpg">
 <h3>Sabão de Coco</h3>
 <select>
-<option value="6">2L - R$ 12,00</option>
+<option value="12">2L - R$ 12,00</option>
 <option value="25">5L - R$ 25,00</option>
 </select>
 <button onclick="addSelect(this,'Sabão de Coco')">Adicionar</button>
@@ -161,8 +157,8 @@ button{
 <img src="img/detergente-concentrado.jpg">
 <h3>Detergente Concentrado</h3>
 <select>
-<option value="14">2L - R$ 12,00</option>
-<option value="32">5L - R$ 25,00</option>
+<option value="12">2L - R$ 12,00</option>
+<option value="25">5L - R$ 25,00</option>
 </select>
 <button onclick="addSelect(this,'Detergente Concentrado')">Adicionar</button>
 </div>
@@ -171,8 +167,8 @@ button{
 <img src="img/amaciante.jpg">
 <h3>Amaciante</h3>
 <select>
-<option value="7">2L - R$ 10,00</option>
-<option value="30">5L - R$ 20,00</option>
+<option value="10">2L - R$ 10,00</option>
+<option value="20">5L - R$ 20,00</option>
 </select>
 <button onclick="addSelect(this,'Amaciante')">Adicionar</button>
 </div>
@@ -191,47 +187,56 @@ button{
 </div>
 
 <script>
-let carrinho=[];
+let carrinho = [];
 
-function addSelect(btn,nome){
- let sel=btn.previousElementSibling;
- let preco=Number(sel.value);
- let texto=sel.options[sel.selectedIndex].text;
- let item=nome+" - "+texto.split(" - ")[0];
- let p=carrinho.find(i=>i.nome===item);
- p?p.qtd++:carrinho.push({nome:item,preco,qtd:1});
- atualizar();
+function addSelect(btn, nome) {
+  let sel = btn.previousElementSibling;
+  let preco = Number(sel.value);
+  let texto = sel.options[sel.selectedIndex].text;
+  let item = nome + " - " + texto.split(" - ")[0];
+
+  let existe = carrinho.find(i => i.nome === item);
+  if (existe) existe.qtd++;
+  else carrinho.push({ nome: item, preco: preco, qtd: 1 });
+
+  atualizar();
 }
 
-function atualizar(){
- let l=document.getElementById("lista");
- let t=document.getElementById("total");
- let c=document.getElementById("contador");
- l.innerHTML="";let total=0,itens=0;
- carrinho.forEach(i=>{
-  total+=i.preco*i.qtd;itens+=i.qtd;
-  l.innerHTML+=`<li>${i.nome} (${i.qtd})</li>`;
- });
- t.innerText=total.toFixed(2);
- c.innerText=itens;
+function atualizar() {
+  let lista = document.getElementById("lista");
+  let totalEl = document.getElementById("total");
+  let contador = document.getElementById("contador");
+
+  lista.innerHTML = "";
+  let total = 0;
+  let itens = 0;
+
+  carrinho.forEach(i => {
+    total += i.preco * i.qtd;
+    itens += i.qtd;
+    lista.innerHTML += `<li>${i.nome} (${i.qtd})</li>`;
+  });
+
+  totalEl.innerText = total.toFixed(2);
+  contador.innerText = itens;
 }
 
-function toggleCarrinho(){
- document.getElementById("carrinho").classList.toggle("aberto");
+function toggleCarrinho() {
+  document.getElementById("carrinho").classList.toggle("aberto");
 }
 
-function finalizar(){
- let msg="Pedido:%0A";
- carrinho.forEach(i=>msg+=`- ${i.nome} (${i.qtd})%0A`);
- msg+=`Total: R$ ${document.getElementById("total").innerText}`;
- window.open("https://wa.me/5599999999999?text="+msg);
+function finalizar() {
+  let msg = "Pedido:%0A";
+  carrinho.forEach(i => msg += `- ${i.nome} (${i.qtd})%0A`);
+  msg += `Total: R$ ${document.getElementById("total").innerText}`;
+  window.open("https://wa.me/5599999999999?text=" + msg);
 }
 
-function mostrarCategoria(id,btn){
- document.querySelectorAll(".categoria").forEac táh(c=>c.classList.remove("ativa"));
- document.querySelectorAll(".abas button").forEach(b=>b.classList.remove("ativa"));
- document.getElementById(id).classList.add("ativa");
- btn.classList.add("ativa");
+function mostrarCategoria(id, btn) {
+  document.querySelectorAll(".categoria").forEach(c => c.classList.remove("ativa"));
+  document.querySelectorAll(".abas button").forEach(b => b.classList.remove("ativa"));
+  document.getElementById(id).classList.add("ativa");
+  btn.classList.add("ativa");
 }
 </script>
 
